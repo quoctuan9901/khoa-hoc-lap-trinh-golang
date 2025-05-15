@@ -1,0 +1,68 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+)
+
+func cookCom(ctx context.Context, chPho chan<- string) {
+	fmt.Println("Bat dau nau Com")
+	select {
+	case <-time.After(100 * time.Millisecond):
+		chPho <- "Com da nau xong"
+	case <-ctx.Done():
+		fmt.Println("Huy nau Com")
+		return
+	}
+}
+
+func cookPho(ctx context.Context, chPho chan<- string) {
+	fmt.Println("Bat dau nau Pho")
+	select {
+	case <-time.After(1 * time.Second):
+		chPho <- "Pho da nau xong"
+	case <-ctx.Done():
+		fmt.Println("Huy nau Pho")
+		return
+	}
+}
+
+func cookChao(ctx context.Context, chChao chan<- string) {
+	fmt.Println("Bat dau nau Chao")
+	select {
+	case <-time.After(2 * time.Second):
+		chChao <- "Chao da nau xong"
+	case <-ctx.Done():
+		fmt.Println("Huy nau Chao")
+		return
+	}
+}
+
+func main() {
+	chPho := make(chan string)
+	chChao := make(chan string)
+	chCom := make(chan string)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1500 * time.Millisecond)
+	defer cancel()
+
+	go cookPho(ctx, chPho)
+	go cookChao(ctx, chChao)
+	go cookCom(ctx, chCom)
+
+	for i := 1; i <= 3; i++ {
+		select {
+		case pho := <- chPho:
+			fmt.Println("Nhan duoc: ", pho)
+		case chao := <- chChao:
+			fmt.Println("Nhan duoc: ", chao)
+		case com := <- chCom:
+			fmt.Println("Nhan duoc: ", com)
+		case <-ctx.Done():
+			fmt.Println("Timeout, khong nhan mon")
+			return
+		}
+	}
+}

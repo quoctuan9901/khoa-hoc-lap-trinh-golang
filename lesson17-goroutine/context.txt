@@ -1,0 +1,32 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+func employee(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("Cong viec da bi huy: ", ctx.Err())
+			return
+		default:
+			priority := ctx.Value("priority")
+			fmt.Println("Dang lam viec cua task uu tien voi muc do: ", priority)
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+}
+
+func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 2 * time.Second)
+	defer cancel()
+
+	ctx = context.WithValue(ctx, "priority", "hight")
+
+	go employee(ctx)
+
+	time.Sleep(3 * time.Second)
+}

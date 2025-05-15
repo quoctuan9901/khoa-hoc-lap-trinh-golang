@@ -1,0 +1,38 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	ch := make(chan int, 3)
+
+	ch <- 10 // Block -> Gửi
+	ch <- 20 // Block -> Gửi
+	ch <- 30 // Block -> Gửi
+	//close(ch)
+
+	// go func() {
+	// 	defer close(ch)
+	// 	ch <- 10 // Block -> Gửi
+	// 	ch <- 20 // Block -> Gửi
+	// 	ch <- 30 // Block -> Gửi
+	// }()
+
+	// Goroutine Anonymous
+	// go func() {
+	// 	fmt.Println(<- ch)
+	// }()
+
+	for i := 1; i <= 3; i++ {
+		fmt.Println(<-ch)
+	}
+
+	// for value := range ch {
+	// 	fmt.Println(value)
+	// }
+
+	time.Sleep(1 * time.Second)
+
+}
