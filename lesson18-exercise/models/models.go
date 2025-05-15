@@ -8,7 +8,7 @@ import (
 
 type Monitor interface {
 	Name() string
-	Check(ctx context.Context) string
+	Check(ctx context.Context) (string, bool)
 }
 
 type SystemStat struct {

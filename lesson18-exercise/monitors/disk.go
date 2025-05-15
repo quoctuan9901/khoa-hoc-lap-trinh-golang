@@ -15,7 +15,7 @@ func (m *DiskMonitor) Name() string {
 	return "Disk"
 }
 
-func (m *DiskMonitor) Check(ctx context.Context) string {
+func (m *DiskMonitor) Check(ctx context.Context) (string, bool) {
 	path := "/"
 	if runtime.GOOS == "windows" {
 		path = "C:"
@@ -23,10 +23,10 @@ func (m *DiskMonitor) Check(ctx context.Context) string {
 
 	diskStat, err := disk.UsageWithContext(ctx, path)
 	if err != nil {
-		return fmt.Sprintf("[Disk Monitor] Could not retrieve Disk info: %v \n", err)
+		return fmt.Sprintf("[Disk Monitor] Could not retrieve Disk info: %v \n", err), false
 	}
 
 	value := fmt.Sprintf("%.2f%% used", diskStat.UsedPercent)
 
-	return value
+	return value, diskStat.UsedPercent > 60
 }
