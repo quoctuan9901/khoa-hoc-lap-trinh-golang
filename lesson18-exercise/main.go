@@ -49,7 +49,7 @@ func main() {
 				models.StatMutex.Unlock()
 			}
 
-			processor.GetTopProcesses(ctx)
+			fmt.Println(processor.GetTopProcesses(ctx))
 		}
 
 	}()
